@@ -1,11 +1,11 @@
 <script type="text/javascript">
         var newwindow;
         var intId;
-        function fb_connect(){
-            var  screenX    = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
-                 screenY    = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
-                 outerWidth = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
-                 outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
+        function fb_connect() {
+            var  screenX        = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
+                 screenY        = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
+                 outerWidth     = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
+                 outerHeight    = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
                  width    = 500,
                  height   = 270,
                  left     = parseInt(screenX + ((outerWidth - width) / 2), 10),
@@ -16,7 +16,7 @@
                     ',left=' + left +
                     ',top=' + top
                   );
- 
+
             newwindow=window.open('<?php echo $this->fb_login_url; ?>','fb_connect',features);
             if (window.focus) {newwindow.focus()}
             return false;
@@ -24,19 +24,26 @@
 
  </script>
 
-<?php if (!$this->fb_user_id): ?>
+<?php $this->import('FrontendUser', 'User'); ?>
+
+<?php if (!(is_string($this->User->username) && $this->User->fb_user_id > 0)): ?>
 <div class="<?php echo $this->class; ?>"<?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
-	<?php if ($this->headline): ?>
-		<<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
-	<?php endif; ?>
-  <div id="fbLogin"><?php if($this->fb_feCssAppearance){ $GLOBALS['TL_CSS'][] = TL_PLUGINS_URL . 'system/modules/FacebookConnect/assets/facebookconnectbutton.css'; echo '<div class="icon"></div>';} ?><a href="#" onclick="fb_connect();return false;"><?php
-	if(!$this->fb_changeFeMessage)
-	{
-		echo $GLOBALS['TL_LANG']['MSC']['fb_feMessage'];
-	}
-	else
-	{
-		echo $this->fb_feMessage;
-	} ?></a></div>
+    <?php if ($this->headline): ?>
+        <<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
+    <?php endif; ?>
+    <div id="fbLogin"><?php if($this->fb_feCssAppearance){ $GLOBALS['TL_CSS'][] = TL_PLUGINS_URL . 'system/modules/FacebookConnect/assets/facebookconnectbutton.css'; echo '<div class="icon"></div>';} ?>
+        <a href="#" onclick="fb_connect();return false;">
+        <?php
+            if (!is_string($this->User->username)) {
+                if(!$this->fb_changeFeMessage)
+                    echo $GLOBALS['TL_LANG']['MSC']['fb_feMessage'];
+                else
+                    echo $this->fb_feMessage;
+            } elseif (is_string($this->User->username) && empty($this->User->fb_user_id)) {
+                echo $GLOBALS['TL_LANG']['MSC']['fb_feMessageConnectAccount'];
+            }
+        ?>
+        </a>
+	</div>
 </div>
 <?php endif; ?>
